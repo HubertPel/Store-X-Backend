@@ -74,7 +74,7 @@
             <version>3.4.1</version>
         </dependency>
 
-<!--        TOKEN-->
+        <!--        TOKEN-->
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-api</artifactId>
@@ -95,7 +95,7 @@
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
 
-<!--        LOGGER      -->
+        <!--        LOGGER      -->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>log4j-over-slf4j</artifactId>

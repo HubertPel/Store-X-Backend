@@ -1,0 +1,8 @@
+ssh storex@s1.ct8.pl
+pss: z3k78gkvgdK0nBqw**k3
+
+# dodanie javy 21
+export JAVA_VERSION="21"
+
+#odpalenie apki z ograniczonym ramem
+java -Xmx128m -Xms1m -jar ~/app/storex.jar > log.log 2>&1 &
