@@ -1,11 +1,12 @@
 package pl.storex.storex.user.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.lang.Nullable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import pl.storex.storex.model.LoginDTO;
 import pl.storex.storex.group.model.UsersGroup;
 import pl.storex.storex.group.service.UsersGroupRepository;
+import pl.storex.storex.model.LoginDTO;
 import pl.storex.storex.user.exception.UserNotFoundException;
 import pl.storex.storex.user.model.Role;
 import pl.storex.storex.user.model.User;
@@ -14,6 +15,7 @@ import pl.storex.storex.user.model.UserDTO;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 
 @Service
 @RequiredArgsConstructor
@@ -34,18 +36,20 @@ public class UserService {
                 .role(Role.USER)
                 .password(passwordEncoder.encode(dto.getPassword()))
                 .build();
+        User savedUser = userRepository.save(user);
 
         if (dto.getGroupId() != null) {
-            user.setGroup_id(getGroupIdOrCreateNew(dto.getGroupId(), dto.getGroupName(), dto.getName()));
+            savedUser.setGroup_id(getGroupIdOrCreateNew(dto.getGroupId(), dto.getGroupName(), dto.getName(), savedUser.getId()));
         } else {
             UsersGroup group = groupRepository.save(UsersGroup.builder()
-                    .name(dto.getName())
-                    .groupOwnerEmail(user.getEmail())
+                    .updated_by(savedUser.getId())
+                    .name(savedUser.getName())
+                    .groupOwnerEmail(savedUser.getEmail())
                     .build()
             );
-            user.setGroup_id(group.getId());
+            savedUser.setGroup_id(group.getId());
         }
-        return userRepository.save(user);
+        return userRepository.save(savedUser);
     }
 
     public User update(UserDTO newUser, Long id) {
@@ -65,7 +69,7 @@ public class UserService {
                                 .group_id(getGroupIdOrCreateNew(
                                         newUser.getGroupId(),
                                         (newUser.getGroupName() != null) ? newUser.getGroupName() : null,
-                                        newUser.getEmail()))
+                                        newUser.getEmail(), null))
                                 .build()));
     }
 
@@ -81,8 +85,16 @@ public class UserService {
         return userRepository.existsUserByEmailAndName(email, name);
     }
 
-    private Long getGroupIdOrCreateNew(Long groupId, String groupName, String ownerEmail) {
-        UsersGroup usersGroupById = groupRepository.findUsersGroupById(groupId);
+    private Long getGroupIdOrCreateNew(Long groupId, String groupName, String ownerEmail, @Nullable Long userId) {
+        assert userId != null;
+        User user = userRepository.findById(userId).orElse(null);
+        if (user == null) {
+            return null;
+        }
+        UsersGroup usersGroupById = null;
+        if (groupId != null) {
+            usersGroupById = groupRepository.findById(groupId).orElse(null);
+        }
         Long userGroupId;
         if (usersGroupById != null) {
             userGroupId = usersGroupById.getId();
@@ -91,6 +103,7 @@ public class UserService {
                     UsersGroup.builder()
                             .name(groupName)
                             .groupOwnerEmail(ownerEmail)
+                            .updated_by(user.getId())
                             .build()
             );
             userGroupId = newUserGroup.getId();
@@ -119,13 +132,36 @@ public class UserService {
 
     public UserDTO register(UserDTO userDTO) {
         User user = User.toUser(userDTO);
+        user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
         user.setRole(Role.USER);
         return User.toDTO(userRepository.save(user));
     }
 
     public UserDTO registerAdmin(UserDTO userDTO) {
-        User user = User.toUser(userDTO);
-        user.setRole(Role.ADMIN);
-        return User.toDTO(userRepository.save(user));
+        boolean userExists = checkIfUserExists(userDTO.getEmail(), userDTO.getName());
+        AtomicReference<User> userToReturn = new AtomicReference<>();
+        if (userExists) {
+            Optional<User> userByEmail = userRepository.findUserByEmail(userDTO.getEmail());
+            userByEmail.ifPresent(user -> {
+                user.setGroup_id(getGroupIdOrCreateNew(user.getGroup_id(), user.getName(), user.getEmail(), user.getId()));
+                user.setRole(Role.ADMIN);
+               userToReturn.set(userRepository.save(user));
+            });
+            return User.toDTO(userToReturn.get());
+        } else {
+            User user = new User();
+            user.setEmail(userDTO.getEmail());
+            user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+            user.setName(userDTO.getName());
+            user.setRole(Role.ADMIN);
+
+            User savedUser = userRepository.save(user);
+            if ((userDTO.getGroupId()) == null) {
+                savedUser.setGroup_id(getGroupIdOrCreateNew(null, userDTO.getGroupName(), userDTO.getEmail(), savedUser.getId()));
+            } else {
+                savedUser.setGroup_id(userDTO.getGroupId());
+            }
+            return User.toDTO(userRepository.save(savedUser));
+        }
     }
 }

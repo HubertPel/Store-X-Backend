@@ -1,5 +1,6 @@
 package pl.storex.storex.user.model;
 
+import io.swagger.v3.oas.annotations.Hidden;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,6 +10,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.io.Serial;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -21,6 +23,7 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 public class User implements UserDetails {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     @Id
@@ -35,32 +38,6 @@ public class User implements UserDetails {
     private Date created_at;
     @Enumerated(EnumType.STRING)
     private Role role;
-
-
-    public UserDTO toDTO() {
-        return UserDTO.builder()
-                .id(this.id)
-                .name(this.name)
-                .password(this.password)
-                .email(this.email)
-                .role(this.role)
-//                .role(this.role.stream().map(Role::toDTO).collect(Collectors.toSet())) // INTERESTING
-                .groupId(this.group_id)
-                .build();
-    }
-
-    public static User fromDTO(UserDTO userDTO) {
-        return User.builder()
-                .id(userDTO.getId())
-                .name(userDTO.getName())
-                .password(userDTO.getPassword())
-                .email(userDTO.getEmail())
-                .role(userDTO.getRole())
-                .group_id(userDTO.getGroupId())
-                .build();
-    }
-
-
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

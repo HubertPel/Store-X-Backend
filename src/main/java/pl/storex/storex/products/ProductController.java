@@ -54,7 +54,7 @@ public class ProductController {
     }
 
     @PostMapping("/getByDTOCategoryId")
-    ResponseEntity<List<ProductDto>> getProductByCategoryId(@RequestBody ProductDto dto) {
+    ResponseEntity<List<ProductDto>> getProductsByCategoryId(@RequestBody ProductDto dto) {
         return ResponseEntity.ok(productService.findByCategoryId(dto));
     }
 

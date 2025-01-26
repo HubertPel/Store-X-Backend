@@ -1,8 +1,10 @@
 package pl.storex.storex.user.model;
 
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 @Data
@@ -11,6 +13,9 @@ import java.io.Serializable;
 @Getter
 @Setter
 public class UserDTO implements Serializable {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     private Long id;
     @Schema(example = "test@test.com")
@@ -23,6 +28,7 @@ public class UserDTO implements Serializable {
     private Long groupId;
     @Schema(description = "Optional", example = "Optional: test@test.com or my group name")
     private String groupName;
+    @Hidden
     private Role role;
 /*
     @Schema(accessMode = Schema.AccessMode.READ_ONLY)
