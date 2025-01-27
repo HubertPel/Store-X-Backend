@@ -2,6 +2,7 @@ package pl.storex.storex.user.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -34,7 +35,7 @@ public class UsersController {
     }
 
     @PostMapping("/register")
-    ResponseEntity<UserDTO> registerWithoutGroup(@RequestBody UserDTO userDTO) {
+    ResponseEntity<UserDTO> registerWithoutGroup(@RequestBody @Valid UserDTO userDTO) {
         return ResponseEntity.ok(repository.register(userDTO));
     }
 
