@@ -13,14 +13,17 @@ import java.util.Date;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class InventoryDto implements Serializable {
+public class InventoryDTO implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
     private Long id;
     private Long productId;
     private Long locationId;
-    private Long addedBy;
     private Date addedAt;
+    private Long addedBy;
+    private Long updatedBy;
+    private Date updatedAt;
     private Date expirationDate;
+
 }

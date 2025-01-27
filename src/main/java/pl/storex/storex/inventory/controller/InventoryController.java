@@ -1,18 +1,21 @@
 package pl.storex.storex.inventory.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.repository.query.Param;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import pl.storex.storex.inventory.model.Inventory;
-import pl.storex.storex.inventory.model.InventoryDto;
+import pl.storex.storex.inventory.model.InventoryDTO;
 import pl.storex.storex.inventory.service.InventoryService;
 
-@RestController("/inventory")
+@Tag(name = "Store-X Inventory Controller")
+@RestController
+@RequestMapping("/inventory")
 @RequiredArgsConstructor
 public class InventoryController {
     private final InventoryService inventoryService;
 
+    @Operation(summary = "Get all inventory items | Role = ADMIN")
     @GetMapping("/getAll")
     ResponseEntity<?> findAll() {
         return ResponseEntity.ok(inventoryService.findAll());
@@ -44,8 +47,14 @@ public class InventoryController {
     }
 
     @PostMapping("/update")
-    ResponseEntity<?> update(@RequestBody InventoryDto dto) {
+    ResponseEntity<?> update(@RequestBody InventoryDTO dto) {
         return ResponseEntity.ofNullable(inventoryService.update(dto));
+    }
+
+    @DeleteMapping("/delete/{id}")
+    ResponseEntity<?> delete(@PathVariable("id") Long id) {
+        inventoryService.delete(id);
+        return ResponseEntity.ok().build();
     }
 
 

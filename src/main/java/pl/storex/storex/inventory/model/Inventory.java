@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import pl.storex.storex.user.service.UserService;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -28,28 +29,37 @@ public class Inventory implements Serializable {
     private Long locationId;
     @Column(name = "added_at")
     private Date addedAt;
-    @Column(name = "added_by")
+    @JoinTable(name = "appuser", joinColumns = @JoinColumn(name = "id", referencedColumnName = "added_by"),
+            inverseJoinColumns = @JoinColumn(name = "id"))
     private Long addedBy;
-    @Column(name = "expiration_date")
+    @Column(name = "updated_by")
+    private Long updatedBy;
+    @Column(name = "updated_at")
+    private Date updatedAt;
+    @Column(name = "expiration_date", columnDefinition = "DATE")
     private Date expirationDate;
 
-    public InventoryDto toDTO() {
-        return InventoryDto.builder()
+    public InventoryDTO toDTO() {
+        return InventoryDTO.builder()
                 .id(this.id)
                 .productId(this.productId)
                 .locationId(this.locationId)
-                .addedBy(this.addedBy)
-                .addedBy(this.addedBy)
+                .addedAt(this.addedAt)
+                .updatedBy(this.updatedBy)
+                .updatedAt(this.updatedAt)
                 .expirationDate(this.expirationDate)
                 .build();
     }
-    public static Inventory toEntity(InventoryDto inventoryDto) {
+
+    public static Inventory toEntity(InventoryDTO inventoryDto, UserService userService) {
         return Inventory.builder()
                 .id(inventoryDto.getId())
                 .productId(inventoryDto.getProductId())
                 .locationId(inventoryDto.getLocationId())
                 .addedBy(inventoryDto.getAddedBy())
                 .addedAt(inventoryDto.getAddedAt())
+                .updatedAt(inventoryDto.getUpdatedAt())
+                .updatedBy(inventoryDto.getUpdatedBy())
                 .expirationDate(inventoryDto.getExpirationDate())
                 .build();
     }
