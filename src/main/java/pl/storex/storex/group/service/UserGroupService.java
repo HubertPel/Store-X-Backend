@@ -2,12 +2,15 @@ package pl.storex.storex.group.service;
 
 import jakarta.persistence.NonUniqueResultException;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import pl.storex.storex.group.model.UsersGroupDTO;
 import pl.storex.storex.user.model.User;
 import pl.storex.storex.group.model.UsersGroup;
 import pl.storex.storex.user.model.UserDTO;
 import pl.storex.storex.user.service.UserRepository;
+import pl.storex.storex.user.service.UserService;
 
 import java.util.Optional;
 
@@ -16,6 +19,7 @@ import java.util.Optional;
 public class UserGroupService {
     private final UsersGroupRepository groupRepo;
     private final UserRepository user;
+    private final static Logger log = LoggerFactory.getLogger(UserGroupService.class);
 
     public UsersGroup getGroupById(Long id) {
         Optional<UsersGroup> group = groupRepo.findById(id);
@@ -50,17 +54,18 @@ public class UserGroupService {
                 ()-> new NonUniqueResultException("Group not found"));
     }
 
-    public void removeGroup(Long groupId) {
-        Optional<UsersGroup> group = Optional.ofNullable(findGroup(groupId));
+    public void removeGroup(String groupId) {
+        Optional<UsersGroup> group = Optional.ofNullable(findGroup(Long.getLong(groupId)));
+        //todo check user from token is group owner
         group.ifPresent(groupRepo::delete);
     }
 
-    public void removeUserFromGroup(Long userId) {
-        Optional<User> optionalUser = user.findById(userId);
-        if (optionalUser.isPresent()) {
-            User user1 = optionalUser.get();
-            user.save(user1);
-        }
+    public Optional<User> removeUserFromGroup(UserDTO userDTO) {
+        Optional<User> optionalUser = user.findById(userDTO.getId());
+        return optionalUser.map(user1 -> {
+            user1.setGroup_id(null);
+           return user.save(user1);
+        });
     }
 
     public Optional<UsersGroup> findGroup(UsersGroupDTO groupDTO) {
@@ -84,5 +89,10 @@ public class UserGroupService {
              dto = User.toDTO(optionalUser.get());
          }
          return dto;
+    }
+
+    public UsersGroupDTO createGroup(UsersGroupDTO usersGroupDto) {
+        UsersGroup saved = groupRepo.save(UsersGroup.toUser(usersGroupDto));
+        return UsersGroup.toDTO(saved);
     }
 }
