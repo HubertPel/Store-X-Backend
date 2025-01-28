@@ -12,6 +12,7 @@ import pl.storex.storex.user.model.User;
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.Instant;
+import java.util.Date;
 
 @Data
 @Entity
@@ -33,6 +34,7 @@ public class Upload implements Serializable {
     @Column(name = "description")
     private String description;
 
+//    @Lob
     @Column(name = "data")
     private byte[] data;
 
@@ -48,18 +50,18 @@ public class Upload implements Serializable {
     @Column(name = "filetype", length = 5)
     private String filetype;
 
-    @NotNull
+//    @NotNull
     @ColumnDefault("current_timestamp()")
-    @Column(name = "created", nullable = false, updatable = false)
-    private Instant created;
+    @Column(name = "created_at")
+    private Date created;
 
     @Column(name = "created_by")
     private Long createdBy;
 
-    @NotNull
+//    @NotNull
     @ColumnDefault("current_timestamp()")
-    @Column(name = "updated", nullable = false)
-    private Instant updated;
+    @Column(name = "updated_at")
+    private Date updated;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)

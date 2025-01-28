@@ -13,6 +13,7 @@ import pl.storex.storex.user.model.UserDTO;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -76,7 +77,7 @@ public class UserService {
     public void deleteById(Long id) {
         userRepository.getUsersById(id).forEach(user -> {
             user.setEnabled(false);
-            user.setDeleted(Instant.now());
+            user.setDeleted(Date.from(Instant.now()));
             userRepository.save(user);
         });
     }

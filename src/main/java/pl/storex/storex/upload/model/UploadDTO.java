@@ -1,20 +1,19 @@
 package pl.storex.storex.upload.model;
 
-import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.Null;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.ColumnDefault;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 import pl.storex.storex.user.model.User;
+import pl.storex.storex.user.model.UserDTO;
 
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.Instant;
+import java.util.Date;
 
 
 @Data
@@ -27,14 +26,23 @@ public class UploadDTO implements Serializable {
 
     private Integer id;
     private String description;
+    @NotBlank(message = "Invalid data: Empty data")
+    @NotNull(message = "Invalid data: Null data")
     private byte[] data;
+    @NotBlank(message = "Invalid filename: Empty filename")
+    @NotNull(message = "Invalid filename: Null filename")
     private String filename;
     private String filesize;
+    @NotBlank(message = "Invalid filetype: Empty filetype")
+    @NotNull(message = "Invalid filetype: Null filetype")
     private String filetype;
-    private Instant created;
+    private Date created;
+    @NotBlank(message = "Invalid createdBy: Empty createdBy")
+    @NotNull(message = "Invalid createdBy: Null createdBy")
     private Long createdBy;
-    private Instant updated;
-    private User updatedBy;
+    private Date updated;
+    @NotNull(message = "Invalid updatedBy: Null updatedBy")
+    private UserDTO updatedBy;
 
     public Upload toEntity() {
         return Upload.builder()
@@ -47,7 +55,50 @@ public class UploadDTO implements Serializable {
                 .created(this.created)
                 .createdBy(this.createdBy)
                 .updated(this.updated)
-                .updatedBy(this.updatedBy)
+                .updatedBy(User.toUser(this.updatedBy))
+                .build();
+    }
+
+    public static UploadDTO toDtoWithoutData(Upload  upload) {
+        return UploadDTO.builder()
+                .id(upload.getId())
+                .description(upload.getDescription())
+                .filename(upload.getFilename())
+                .filesize(upload.getFilesize())
+                .filetype(upload.getFiletype())
+                .created(upload.getCreated())
+                .createdBy(upload.getCreatedBy())
+                .updated(upload.getUpdated())
+                .updatedBy(UserDTO.builder()
+                        .name(upload.getUpdatedBy().getName())
+                        .email(upload.getUpdatedBy().getEmail())
+                        .groupId(upload.getCreatedBy())
+                        .id(upload.getUpdatedBy().getId())
+                        .enabled(upload.getUpdatedBy().isEnabled())
+                        .role(upload.getUpdatedBy().getRole())
+                        .build())
+                .build();
+    }
+
+    public static UploadDTO toDTO(Upload upload) {
+        return UploadDTO.builder()
+                .id(upload.getId())
+                .description(upload.getDescription())
+                .data(upload.getData())
+                .filename(upload.getFilename())
+                .filesize(upload.getFilesize())
+                .filetype(upload.getFiletype())
+                .created(upload.getCreated())
+                .createdBy(upload.getCreatedBy())
+                .updated(upload.getUpdated())
+                .updatedBy(UserDTO.builder()
+                        .name(upload.getUpdatedBy().getName())
+                        .email(upload.getUpdatedBy().getEmail())
+                        .groupId(upload.getUpdatedBy().getGroup_id())
+                        .id(upload.getUpdatedBy().getId())
+                        .enabled(upload.getUpdatedBy().isEnabled())
+                        .role(upload.getUpdatedBy().getRole())
+                        .build())
                 .build();
     }
 

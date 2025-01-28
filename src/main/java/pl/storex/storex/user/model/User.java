@@ -34,14 +34,34 @@ public class User implements UserDetails {
     private String email;
     private String password;
     private Long group_id;
+    @Column(name = "created")
     private Date created_at;
     @Enumerated(EnumType.STRING)
     private Role role;
     private boolean enabled;
     @Column(name = "deleted_at")
-    private Instant deleted;
+    private Date deleted;
 
+    public static UserDTO toDTO(User user) {
+        return UserDTO.builder()
+                .groupId(user.group_id)
+                .name(user.name)
+                .groupName(user.email)
+                .email(user.email)
+                .enabled(user.enabled)
+                .build();
+    }
 
+    public static User toUser(UserDTO userDTO) {
+        return User.builder()
+                .name(userDTO.getName())
+                .email(userDTO.getEmail())
+                .group_id(userDTO.getGroupId())
+                .enabled(userDTO.isEnabled())
+                .build();
+    }
+
+/*
     public UserDTO toDTO() {
         return UserDTO.builder()
                 .id(this.id)
@@ -52,7 +72,7 @@ public class User implements UserDetails {
 //                .role(this.role.stream().map(Role::toDTO).collect(Collectors.toSet())) // INTERESTING
                 .groupId(this.group_id)
                 .build();
-    }
+    }*/
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -89,22 +109,4 @@ public class User implements UserDetails {
         return enabled;
     }
 
-    public static UserDTO toDTO(User user) {
-        return UserDTO.builder()
-                .groupId(user.group_id)
-                .name(user.name)
-                .groupName(user.email)
-                .email(user.email)
-                .enabled(user.enabled)
-                .build();
-    }
-
-    public static User toUser(UserDTO userDTO) {
-        return User.builder()
-                .name(userDTO.getName())
-                .email(userDTO.getEmail())
-                .group_id(userDTO.getGroupId())
-                .enabled(userDTO.isEnabled())
-                .build();
-    }
 }
