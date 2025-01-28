@@ -38,5 +38,7 @@ public class UserDTO implements Serializable {
     @Schema(description = "Optional", example = "Optional: test@test.com or my group name")
     private String groupName;
     private Role role;
+    private boolean enabled;
+    private boolean deleted;
 
 }

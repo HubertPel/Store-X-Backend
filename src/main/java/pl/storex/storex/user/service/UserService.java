@@ -11,6 +11,7 @@ import pl.storex.storex.user.model.Role;
 import pl.storex.storex.user.model.User;
 import pl.storex.storex.user.model.UserDTO;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -74,7 +75,11 @@ public class UserService {
     }
 
     public void deleteById(Long id) {
-        userRepository.deleteById(id);
+        userRepository.getUsersById(id).forEach(user -> {
+            user.setEnabled(false);
+            user.setDeleted(Instant.now());
+            userRepository.save(user);
+        });
     }
 
     public boolean checkIfUserExists(String email, String name) {

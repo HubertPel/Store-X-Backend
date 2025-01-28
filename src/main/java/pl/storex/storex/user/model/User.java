@@ -10,10 +10,10 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.io.Serial;
+import java.time.Instant;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Data
 @Entity(name = "appuser")
@@ -37,6 +37,9 @@ public class User implements UserDetails {
     private Date created_at;
     @Enumerated(EnumType.STRING)
     private Role role;
+    private boolean enabled;
+    @Column(name = "deleted_at")
+    private Instant deleted;
 
 
     public UserDTO toDTO() {
@@ -50,19 +53,6 @@ public class User implements UserDetails {
                 .groupId(this.group_id)
                 .build();
     }
-
-    public static User fromDTO(UserDTO userDTO) {
-        return User.builder()
-                .id(userDTO.getId())
-                .name(userDTO.getName())
-                .password(userDTO.getPassword())
-                .email(userDTO.getEmail())
-                .role(userDTO.getRole())
-                .group_id(userDTO.getGroupId())
-                .build();
-    }
-
-
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -96,7 +86,7 @@ public class User implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return enabled;
     }
 
     public static UserDTO toDTO(User user) {
@@ -105,6 +95,7 @@ public class User implements UserDetails {
                 .name(user.name)
                 .groupName(user.email)
                 .email(user.email)
+                .enabled(user.enabled)
                 .build();
     }
 
@@ -113,6 +104,7 @@ public class User implements UserDetails {
                 .name(userDTO.getName())
                 .email(userDTO.getEmail())
                 .group_id(userDTO.getGroupId())
+                .enabled(userDTO.isEnabled())
                 .build();
     }
 }
