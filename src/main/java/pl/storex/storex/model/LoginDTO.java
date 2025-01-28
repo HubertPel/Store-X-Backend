@@ -27,7 +27,7 @@ public class LoginDTO implements Serializable {
 
     @NotBlank(message = "Invalid password: Empty password")
     @NotNull(message = "Invalid password: Null password")
-    @Min(value = 5, message = "Invalid password: Password too short")
+//    @Min(value = , message = "Invalid password: Password too short")
     private String password;
 
     public LoginDTO(String password, String email) {

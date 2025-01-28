@@ -40,5 +40,7 @@ public class UserDTO implements Serializable {
     private String groupName;
     @Hidden
     private Role role;
+    private boolean enabled;
+    private boolean deleted;
 
 }

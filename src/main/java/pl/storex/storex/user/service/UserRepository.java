@@ -6,6 +6,7 @@ import org.springframework.data.repository.query.Param;
 import pl.storex.storex.user.model.User;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -20,4 +21,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("select u from appuser u where u.group_id = :groupId")
     Optional<ArrayList<User>> findUsersByGroupId(@Param("groupId") Long groupId);
 
+    List<User> getUsersById(Long id);
 }

@@ -11,10 +11,10 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.io.Serial;
+import java.time.Instant;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Data
 @Entity(name = "appuser")
@@ -35,9 +35,33 @@ public class User implements UserDetails {
     private String email;
     private String password;
     private Long group_id;
+    @Column(name = "created")
     private Date created_at;
     @Enumerated(EnumType.STRING)
     private Role role;
+    private boolean enabled;
+    @Column(name = "deleted_at")
+    private Date deleted;
+
+
+    public static UserDTO toDTO(User user) {
+        return UserDTO.builder()
+                .groupId(user.group_id)
+                .name(user.name)
+                .groupName(user.email)
+                .email(user.email)
+                .enabled(user.enabled)
+                .build();
+    }
+
+    public static User toUser(UserDTO userDTO) {
+        return User.builder()
+                .name(userDTO.getName())
+                .email(userDTO.getEmail())
+                .group_id(userDTO.getGroupId())
+                .enabled(userDTO.isEnabled())
+                .build();
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -71,23 +95,7 @@ public class User implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return enabled;
     }
 
-    public static UserDTO toDTO(User user) {
-        return UserDTO.builder()
-                .groupId(user.group_id)
-                .name(user.name)
-                .groupName(user.email)
-                .email(user.email)
-                .build();
-    }
-
-    public static User toUser(UserDTO userDTO) {
-        return User.builder()
-                .name(userDTO.getName())
-                .email(userDTO.getEmail())
-                .group_id(userDTO.getGroupId())
-                .build();
-    }
 }

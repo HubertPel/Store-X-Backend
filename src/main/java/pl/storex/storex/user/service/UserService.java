@@ -18,8 +18,9 @@ import pl.storex.storex.user.exception.UserNotFoundException;
 import pl.storex.storex.user.model.Role;
 import pl.storex.storex.user.model.User;
 import pl.storex.storex.user.model.UserDTO;
-
+import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -71,8 +72,7 @@ public class UserService {
                     user.setPassword(newUser.getPassword());
                     user.setGroup_id(newUser.getGroupId());
                     return userRepository.save(user);
-                })
-                .orElseGet(() -> userRepository.save(
+                }).orElseGet(() -> userRepository.save(
                         User.builder()
                                 .name(newUser.getName())
                                 .password(newUser.getPassword())
@@ -87,8 +87,8 @@ public class UserService {
     public Optional<User> findById(Long id) {
         return userRepository.findById(id);
     }
-
-    public void deleteById() {
+  
+  public void deleteById() {
         User principal = authUser.currentUser().orElse(null);
         assert principal != null;
 
