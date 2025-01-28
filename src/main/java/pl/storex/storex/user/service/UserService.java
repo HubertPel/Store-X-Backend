@@ -58,16 +58,15 @@ public class UserService {
                     user.setGroup_id(newUser.getGroupId());
                     return userRepository.save(user);
                 })
-                .orElseGet(() -> userRepository.save(
-                        User.builder()
-                                .name(newUser.getName())
-                                .password(newUser.getPassword())
-                                .email(newUser.getPassword())
-                                .group_id(getGroupIdOrCreateNew(
-                                        newUser.getGroupId(),
-                                        (newUser.getGroupName() != null) ? newUser.getGroupName() : null,
-                                        newUser.getEmail()))
-                                .build()));
+                .orElseGet(() -> {
+                    Long groupId = getGroupIdOrCreateNew(newUser.getGroupId(), newUser.getGroupName(), newUser.getEmail());
+                    return userRepository.save(User.builder()
+                            .name(newUser.getName())
+                            .password(newUser.getPassword())
+                            .email(newUser.getEmail())
+                            .group_id(groupId)
+                            .build());
+                });
     }
 
     public Optional<User> findById(Long id) {
