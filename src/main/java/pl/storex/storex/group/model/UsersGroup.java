@@ -5,6 +5,7 @@ import lombok.*;
 import pl.storex.storex.user.model.User;
 import pl.storex.storex.user.model.UserDTO;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.Date;
@@ -17,6 +18,9 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UsersGroup implements Serializable {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     @Id
     @Column(name = "id", nullable = false)

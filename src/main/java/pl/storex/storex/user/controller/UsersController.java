@@ -35,12 +35,12 @@ public class UsersController {
     }
 
     @PostMapping("/register")
-    ResponseEntity<UserDTO> registerWithoutGroup(@RequestBody UserDTO userDTO) {
+    ResponseEntity<UserDTO> registerWithoutGroup(@RequestBody @Valid UserDTO userDTO) {
         return ResponseEntity.ok(repository.register(userDTO));
     }
 
     @PostMapping(value = "/addUser", produces = "application/json", consumes = "application/json")
-    ResponseEntity<UserDTO> newUser(@RequestBody UserDTO userDTO) {
+    ResponseEntity<UserDTO> newUser(@RequestBody @Valid UserDTO userDTO) {
         User newUser = repository.save(userDTO);
         return ResponseEntity.ok(UserDTO.builder()
                         .email(newUser.getEmail())
@@ -63,7 +63,7 @@ public class UsersController {
     }
 
     @PutMapping(value = "/updateUser/{id}", consumes = "application/json", produces = "application/json")
-    User updateUser(@RequestBody UserDTO newUser, @PathVariable Long id) {
+    User updateUser(@RequestBody @Valid UserDTO newUser, @PathVariable Long id) {
         return repository.update(newUser, id);
     }
 
@@ -76,14 +76,31 @@ public class UsersController {
 
 //    @CrossOrigin(origins = "localhost:52114")
     @PostMapping(value = "/login", produces = "application/json", consumes = "application/json")
-    ResponseEntity<RequestAuth> login(@RequestBody LoginDTO loginDto) {
+    ResponseEntity<RequestAuth> login(@RequestBody @Valid LoginDTO loginDto) {
+        System.out.println(loginDto.getEmail());
+        if (loginDto.getEmail() != null && loginDto.getPassword() != null) {
+            //find user and check pass
+            User user = repository.findByNameAndCheckPass(loginDto);
+            if (user != null) {
+                return ResponseEntity
+                        .ok()
+                        .body(RequestAuth.builder()
+                                .token(jwtService.generateToken(user))
+                                .refreshToken(jwtService.generateRefreshToken(user))
+                                .build());
+            }
+        }
+        return ResponseEntity.notFound().build();
+    }
+  
+   ResponseEntity<RequestAuth> login(@RequestBody LoginDTO loginDto) {
         return repository.findByNameAndCheckPass(loginDto);
     }
 
     @RolesAllowed(value = "ADMIN")
     @Operation(summary = "Register user with Admin role | only for Admins")
     @PostMapping("/register/admin")
-    ResponseEntity<UserDTO> registerAdmin(@RequestBody UserDTO userDTO) {
+    ResponseEntity<UserDTO> registerAdmin(@RequestBody @Valid UserDTO userDTO) {
         return ResponseEntity.ok(repository.registerAdmin(userDTO));
     }
 
