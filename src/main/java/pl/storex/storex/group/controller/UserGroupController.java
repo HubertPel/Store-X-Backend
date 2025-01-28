@@ -8,21 +8,23 @@ import org.springframework.web.bind.annotation.*;
 import pl.storex.storex.group.model.UsersGroup;
 import pl.storex.storex.group.model.UsersGroupDTO;
 import pl.storex.storex.group.service.UserGroupService;
+import pl.storex.storex.user.model.User;
 import pl.storex.storex.user.model.UserDTO;
 
 import java.util.Optional;
 
 @Tag(name = "Store-X Group Controller")
-@RestController("group")
+@RestController
+@RequestMapping("group")
 @RequiredArgsConstructor
 public class UserGroupController {
 
     private final UserGroupService userGroupService;
 
     @PostMapping("/removeUser")
-    ResponseEntity.BodyBuilder removeUserFromGroup(@RequestBody Long userId) {
-        userGroupService.removeUserFromGroup(userId);
-        return ResponseEntity.ok();
+    ResponseEntity<UserDTO> removeUserFromGroup(@RequestBody UserDTO userDTO) {
+        Optional<User> user = userGroupService.removeUserFromGroup(userDTO);
+        return ResponseEntity.of(user.map(User::toDTO));
     }
 
     @PostMapping(value = "/update", consumes = "application/json")
@@ -31,7 +33,7 @@ public class UserGroupController {
     }
 
     @DeleteMapping("/removeGroup")
-    ResponseEntity.BodyBuilder removeGroup(@RequestBody Long groupId) {
+    ResponseEntity.BodyBuilder removeGroup(@RequestBody String groupId) {
         userGroupService.removeGroup(groupId);
         return ResponseEntity.ok();
     }
@@ -46,6 +48,11 @@ public class UserGroupController {
     @PostMapping("/addUser")
     ResponseEntity<UserDTO> addGroupToUser(@RequestBody UserDTO userDTO) {
        return ResponseEntity.ok(userGroupService.findUsersWithoutGroup(userDTO));
+    }
+
+    @PostMapping("/create")
+    ResponseEntity<UsersGroupDTO> createGroup(@RequestBody UsersGroupDTO usersGroupDto) {
+        return ResponseEntity.ok(userGroupService.createGroup(usersGroupDto));
     }
 
 }
