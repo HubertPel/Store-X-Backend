@@ -2,7 +2,7 @@ package pl.storex.storex.user.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
+import jakarta.annotation.security.RolesAllowed;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -68,9 +68,10 @@ public class UsersController {
     }
 
 //    @PreAuthorize("hasAuthority('ADMIN')")
+    @Operation(summary = "ID is not required as it's taken from JWT token")
     @DeleteMapping("/removeUser/{id}")
     void deleteUser(@PathVariable Long id) {
-        repository.deleteById(id);
+        repository.deleteById();
     }
 
 //    @CrossOrigin(origins = "localhost:52114")
@@ -91,8 +92,13 @@ public class UsersController {
         }
         return ResponseEntity.notFound().build();
     }
+  
+   ResponseEntity<RequestAuth> login(@RequestBody LoginDTO loginDto) {
+        return repository.findByNameAndCheckPass(loginDto);
+    }
 
-    @Operation(summary = "Register user with Admin role")
+    @RolesAllowed(value = "ADMIN")
+    @Operation(summary = "Register user with Admin role | only for Admins")
     @PostMapping("/register/admin")
     ResponseEntity<UserDTO> registerAdmin(@RequestBody @Valid UserDTO userDTO) {
         return ResponseEntity.ok(repository.registerAdmin(userDTO));

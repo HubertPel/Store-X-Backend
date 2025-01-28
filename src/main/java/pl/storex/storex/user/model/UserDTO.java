@@ -1,5 +1,6 @@
 package pl.storex.storex.user.model;
 
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -37,6 +38,7 @@ public class UserDTO implements Serializable {
     private Long groupId;
     @Schema(description = "Optional", example = "Optional: test@test.com or my group name")
     private String groupName;
+    @Hidden
     private Role role;
     private boolean enabled;
     private boolean deleted;

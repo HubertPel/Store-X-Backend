@@ -1,5 +1,6 @@
 package pl.storex.storex.user.model;
 
+import io.swagger.v3.oas.annotations.Hidden;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -42,6 +43,7 @@ public class User implements UserDetails {
     @Column(name = "deleted_at")
     private Date deleted;
 
+
     public static UserDTO toDTO(User user) {
         return UserDTO.builder()
                 .groupId(user.group_id)
@@ -60,19 +62,6 @@ public class User implements UserDetails {
                 .enabled(userDTO.isEnabled())
                 .build();
     }
-
-/*
-    public UserDTO toDTO() {
-        return UserDTO.builder()
-                .id(this.id)
-                .name(this.name)
-                .password(this.password)
-                .email(this.email)
-                .role(this.role)
-//                .role(this.role.stream().map(Role::toDTO).collect(Collectors.toSet())) // INTERESTING
-                .groupId(this.group_id)
-                .build();
-    }*/
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
