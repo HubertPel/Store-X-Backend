@@ -2,7 +2,6 @@ package pl.storex.storex.upload.model;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Null;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,7 +11,6 @@ import pl.storex.storex.user.model.UserDTO;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.time.Instant;
 import java.util.Date;
 
 
@@ -59,7 +57,7 @@ public class UploadDTO implements Serializable {
                 .build();
     }
 
-    public static UploadDTO toDtoWithoutData(Upload  upload) {
+    public static UploadDTO toDtoWithoutData(Upload upload) {
         return UploadDTO.builder()
                 .id(upload.getId())
                 .description(upload.getDescription())

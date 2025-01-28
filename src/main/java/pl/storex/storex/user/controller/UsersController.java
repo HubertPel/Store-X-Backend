@@ -3,17 +3,17 @@ package pl.storex.storex.user.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.security.RolesAllowed;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import pl.storex.storex.group.service.UserGroupService;
 import pl.storex.storex.model.LoginDTO;
 import pl.storex.storex.model.RequestAuth;
 import pl.storex.storex.security.JwtService;
-import pl.storex.storex.group.service.UserGroupService;
+import pl.storex.storex.user.exception.UserNotFoundException;
 import pl.storex.storex.user.model.User;
 import pl.storex.storex.user.model.UserDTO;
-import pl.storex.storex.user.exception.UserNotFoundException;
 import pl.storex.storex.user.service.UserService;
 
 import java.util.ArrayList;
@@ -43,11 +43,11 @@ public class UsersController {
     ResponseEntity<UserDTO> newUser(@RequestBody @Valid UserDTO userDTO) {
         User newUser = repository.save(userDTO);
         return ResponseEntity.ok(UserDTO.builder()
-                        .email(newUser.getEmail())
-                        .name(newUser.getName())
-                        .groupId(newUser.getGroup_id())
-                        .password(newUser.getPassword())
-                        .groupName(userGroupService.getGroupById(newUser.getGroup_id()).getName())
+                .email(newUser.getEmail())
+                .name(newUser.getName())
+                .groupId(newUser.getGroup_id())
+                .password(newUser.getPassword())
+                .groupName(userGroupService.getGroupById(newUser.getGroup_id()).getName())
                 .build());
     }
 
@@ -67,33 +67,20 @@ public class UsersController {
         return repository.update(newUser, id);
     }
 
-//    @PreAuthorize("hasAuthority('ADMIN')")
+    //    @PreAuthorize("hasAuthority('ADMIN')")
     @Operation(summary = "ID is not required as it's taken from JWT token")
     @DeleteMapping("/removeUser/{id}")
     void deleteUser(@PathVariable Long id) {
         repository.deleteById();
     }
 
-//    @CrossOrigin(origins = "localhost:52114")
+    //    @CrossOrigin(origins = "localhost:52114")
     @PostMapping(value = "/login", produces = "application/json", consumes = "application/json")
     ResponseEntity<RequestAuth> login(@RequestBody @Valid LoginDTO loginDto) {
         System.out.println(loginDto.getEmail());
-        if (loginDto.getEmail() != null && loginDto.getPassword() != null) {
-            //find user and check pass
-            User user = repository.findByNameAndCheckPass(loginDto);
-            if (user != null) {
-                return ResponseEntity
-                        .ok()
-                        .body(RequestAuth.builder()
-                                .token(jwtService.generateToken(user))
-                                .refreshToken(jwtService.generateRefreshToken(user))
-                                .build());
-            }
+        if (loginDto.getEmail() == null && loginDto.getPassword() == null) {
+            return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.notFound().build();
-    }
-  
-   ResponseEntity<RequestAuth> login(@RequestBody LoginDTO loginDto) {
         return repository.findByNameAndCheckPass(loginDto);
     }
 

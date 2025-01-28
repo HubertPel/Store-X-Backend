@@ -46,7 +46,7 @@ public class Upload implements Serializable {
     @Column(name = "filesize", length = 100)
     private String filesize;
 
-    @Size(max = 5)
+//    @Size(max = 5)
     @Column(name = "filetype", length = 5)
     private String filetype;
 
@@ -63,7 +63,7 @@ public class Upload implements Serializable {
     @Column(name = "updated_at")
     private Date updated;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "updated_by")
     private User updatedBy;
