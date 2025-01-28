@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.Date;
 
 
 @Data
@@ -23,5 +24,11 @@ public class ProductDto implements Serializable {
     private String name;
     private Long categoryId;
     private String barcode;
+    private Date createdAt;
+    private Long createdBy;
+    private Date updatedAt;
+    private Long updatedBy;
+    private Date deletedAt;
+    private Long deletedBy;
 
 }

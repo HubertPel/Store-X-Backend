@@ -89,14 +89,12 @@ public class UserService {
     }
   
   public void deleteById() {
-        User principal = authUser.currentUser().orElse(null);
-        assert principal != null;
+        User principal = AuthUser.currentUser();
+        if (principal == null) throw  new UserNotFoundException("User not found");
 
         UsersGroup group = groupRepository.findById(principal.getGroup_id()).orElse(null);
         if (group == null) return;
-
         log.info("Group was found: {}", group.getName());
-
         if (!group.getGroupOwnerEmail().equals(principal.getEmail())) return;
 
         ArrayList<User> users = userRepository.findUsersByGroupId(principal.getGroup_id()).orElse(null);

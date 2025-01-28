@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.Date;
 
 @Entity
 @Table(name = "products")
@@ -27,23 +28,41 @@ public class Product implements Serializable {
     @Column(name = "category_id")
     private Long categoryId;
     private String barcode;
+    @Column(name = "created")
+    private Date createdAt;
+    private Long createdBy;
+    @Column(name = "updated")
+    private Date updatedAt;
+    private Long updatedBy;
+    @Column(name = "deleted")
+    private Date deletedAt;
+    private Long deletedBy;
 
-    public static Product fromDTOtoModel(ProductDto productDto) {
-        Product product = Product.builder()
+    public static Product toModel(ProductDto productDto) {
+        return Product.builder()
                 .name(productDto.getName())
+                .id((productDto.getId() != null) ? productDto.getId() : null)
                 .categoryId(productDto.getCategoryId())
                 .barcode(productDto.getBarcode())
+                .createdAt(productDto.getCreatedAt())
+                .createdBy(productDto.getCreatedBy())
+                .updatedAt(productDto.getUpdatedAt())
+                .updatedBy(productDto.getUpdatedBy())
                 .build();
-        if(productDto.getId() != null) product.setId(productDto.getId());
-        return product;
     }
 
-    public ProductDto toDTOFromModel(Product product) {
+    public static ProductDto toDTO(Product product) {
         return ProductDto.builder()
                 .id(product.getId())
                 .categoryId(product.getCategoryId())
                 .barcode(product.getBarcode())
                 .name(product.getName())
+                .updatedBy(product.getUpdatedBy())
+                .updatedAt(product.getUpdatedAt())
+                .createdAt(product.getCreatedAt())
+                .createdBy(product.getCreatedBy())
+                .deletedAt(product.getDeletedAt())
+                .deletedBy(product.getDeletedBy())
                 .build();
     }
 

@@ -16,13 +16,13 @@ public class AuthUser {
 
     private final static Logger log = LoggerFactory.getLogger(AuthUser.class);
 
-    public Optional<User> currentUser() {
+    public static User currentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User principal = (User) authentication.getPrincipal();
         Object connectionDetails = authentication.getDetails();
         log.info("Principal: {}", principal.toString());
         log.info("ConnDetails: {}", connectionDetails.toString());
-        return Optional.of(principal);
+         return Optional.of(principal).orElse(null);
     }
 
 }

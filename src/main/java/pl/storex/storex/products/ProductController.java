@@ -30,7 +30,7 @@ public class ProductController {
     }
 
     @PostMapping("/add")
-    ResponseEntity<ProductDto> addProduct(@RequestBody ProductDto productDto) {
+    ResponseEntity<?> addProduct(@RequestBody ProductDto productDto) {
         return ResponseEntity.ok(productService.save(productDto));
     }
 
@@ -48,7 +48,7 @@ public class ProductController {
     @PostMapping("/getByDTOBarcode")
     ResponseEntity<ProductDto> getProductByBarcode(@RequestBody ProductDto productDto) {
         return ResponseEntity.ok(new Product()
-                .toDTOFromModel(productService.findByBarcode(
+                .toDTO(productService.findByBarcode(
                         productDto.getBarcode()
                 )));
     }
