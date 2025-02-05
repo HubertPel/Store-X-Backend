@@ -1,5 +1,6 @@
 package pl.storex.storex.user.service;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -191,4 +192,9 @@ public class UserService {
             return User.toDTO(userRepository.save(savedUser));
         }
     }
+
+    public UserDTO resetPassword(@Valid UserDTO userDTO) {
+        return null;
+    }
+
 }

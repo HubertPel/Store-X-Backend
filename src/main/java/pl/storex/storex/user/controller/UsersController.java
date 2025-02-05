@@ -91,4 +91,9 @@ public class UsersController {
         return ResponseEntity.ok(repository.registerAdmin(userDTO));
     }
 
+    @PostMapping("/resetPassword")
+    ResponseEntity<UserDTO> resetPassword(@RequestBody @Valid UserDTO userDTO) {
+        return ResponseEntity.ok(repository.resetPassword(userDTO));
+    }
+
 }
